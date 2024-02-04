@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Game of Nim</title>
+		<script>
+			let total = 24;
+
+      function subtract(n) {
+        total -= n;
+        document.getElementById('total').innerText = total;
+        log('Новая сумма: ' + total);
+        disableIllegalButtons();
+      }
+
+      function subtractPlayerChoice(choice) {
+        log('Вы вычли ' + choice);
+        subtract(choice);
+        setButtonsEnabled(false);
+        if(total == 1) {
+          log('<h2>Вы выиграли!</h2>');
+          document.getElementById('total').innerText += ' - Вы выиграли!';
+          document.getElementById('resetButton').style.display = 'block';
+        } else {
+          log('Компьютер думает...')
+          setTimeout(playComputerTurn, 1000);
+        }
+      }
+
+      function playComputerTurn() {
+        let choice;
+
+        if (document.getElementById('hardMode').checked) {
+          if (total % 4 == 1) {
+            choice = 1 + Math.floor(Math.random() * 3);
+          } else {
+            choice = (total - 1) % 4;
+          }
+        } else{
+          if(total == 2) {
+            choice = 1;
+          } else if (total == 3) {
+            choice = 1 + Math.floor(Math.random() * 2);
+          } else {
+            choice = 1 + Math.floor(Math.random() * 3);
+          }
+        }
+
+        log('Компьютер вычитает ' + choice);
+        subtract(choice);
+
+        if (total == 1) {
+          log('<h2>Компьютер выиграл!</h2>');
+          document.getElementById('total').innerText += ' - Компьютер выиграл!';
+          setButtonsEnabled(false);
+          document.getElementById('resetButton').style.display = 'block';
+        } else {
+          setButtonsEnabled(true);
+        }
+      }
+
+      function log(message) {
+        document.getElementById('log').innerHTML += '<li>' + message + '</li>'
+      }
+
+      function setButtonsEnabled(enabled) {
+        const playerButtons = document.getElementsByClassName('playerButton');
+        for (const button of playerButtons) {
+          button.disabled = !enabled;
+        }
+
+        if (enabled) {
+          disableIllegalButtons();
+        }
+      }
+
+      function disableIllegalButtons() {
+        if (total == 2) {
+          document.getElementById('twoButton').disabled = true;
+          document.getElementById('threeButton').disabled = true;
+        }
+
+        if (total == 3) {
+          document.getElementById('threeButton').disabled = true;
+        }        
+      }
+
+      function reset() {
+        total = 24;
+        document.getElementById('total').innerText = total;
+        document.getElementById('log').innerHTML = '';
+        log('Игра начинается с 24.');
+        log('По очереди вычитайте 1, 2, или 3.');
+        log('Выиграйте оставив своего противника с 1.');
+        setButtonsEnabled(true);
+        document.getElementById('resetButton').style.display = 'none';
+      }
+		</script>
+
+    <style>
+      #titleAndMode {
+        display: flex;
+        align-items: center;
+      }
+
+      #titleAndMode h1 {
+        margin-right: 25px;
+      }
+
+      .playerButton{
+        font-size: 24px;
+      }
+
+      #resetButton {
+        display: none;
+      }
+
+      li h2 {
+        margin: 0;
+      }
+    </style>
+	</head>
+	<body>
+    <div id="titleAndMode">
+      <h1>Game of Nim</h1>
+      <div>
+        <label>
+          <input type="radio" id="easyMode" name="mode" checked>
+          Easy
+        </label>
+        <br>
+        <label><input type="radio" id="hardMode" name="mode">Hard</label>
+      </div>
+    </div>
+
+    <h2 id="total">24</h2>
+
+    <button id="oneButton" class="playerButton"
+            onclick="subtractPlayerChoice(1)">-1</button>
+    <button id="twoButton" class="playerButton"
+            onclick="subtractPlayerChoice(2)">-2</button>
+    <button id="threeButton" class="playerButton"
+            onclick="subtractPlayerChoice(3)">-3</button>
+
+    <ul id="log">
+      <li>Игра начинается с 24.</li>
+      <li>По очереди вычитайте 1, 2, или 3.</li>
+      <li>Выиграйте оставив своего противника с 1.</li>
+    </ul>
+
+    <button id="resetButton" onclick="reset()">Reset</button>
+	</body>
+</html>
